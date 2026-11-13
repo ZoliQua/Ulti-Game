@@ -1,4 +1,4 @@
-import type { Lang } from '../arcade';
+import type { Lang } from '../arcade/i18n';
 
 /** Hungarian (Tell) suits: piros = hearts, tök = bells, zöld = leaves, makk = acorns. */
 export type HSuit = 'piros' | 'tok' | 'zold' | 'makk';
