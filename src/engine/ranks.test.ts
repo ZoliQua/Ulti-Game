@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { HUNGARIAN_DECK, type HRank } from '../deck/cards';
 import { COLOURLESS_ORDER, TRUMP_ORDER, cardPoints, rankStrength, trickWinner } from './ranks';
-import { c } from './testing';
+import { c } from './__tests__/helpers';
 
 const byStrength = (colourless: boolean): HRank[] =>
   (['VII', 'VIII', 'IX', 'X', 'also', 'felso', 'kiraly', 'asz'] as HRank[])

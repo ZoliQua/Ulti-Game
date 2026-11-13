@@ -4,7 +4,7 @@ import { makeBid } from './bids';
 import { applyBid, dealCards, discard, legalBids, pass, skipKontra } from './deal';
 import { illegalReason, isDealOver, legalPlays, playCard } from './play';
 import { cardKey } from './ranks';
-import { c, playState } from './testing';
+import { c, playState } from './__tests__/helpers';
 import type { BidKind, DealState, Player } from './types';
 
 const keys = (cards: readonly HCard[]) => cards.map(cardKey).sort();

@@ -9,10 +9,10 @@
  *                                          two passes after the last bid → 'kontra' (declarer fixed)
  *   'kontra'   applyKontra | skipKontra    each defender in turn may double once → 'play'
  *   'play'     playCard(state, p, card)    cards from legalPlays(state, p); declarer leads the first trick
- *   'over'     isDealOver(state)
+ *   'over'     isDealOver(state) → dealResult(state) → scoreDeal(result) (units per seat)
  */
 export type {
-  Announcement, Bid, BidKind, DealState, Hands, IllegalReason, LogEntry, Phase, PlayedCard, Player, Trick,
+  Announcement, Bid, BidKind, ContractResult, DealResult, DealState, Hands, IllegalReason, LogEntry, Phase, PlayedCard, Player, Trick,
 } from './types';
 export { COLOURLESS_ORDER, TRUMP_ORDER, cardKey, cardPoints, rankStrength, sameCard, trickWinner } from './ranks';
 export {
@@ -24,3 +24,4 @@ export {
   shuffle, skipKontra,
 } from './deal';
 export { illegalReason, isDealOver, legalPlays, playCard } from './play';
+export { dealResult, partiPoints, scoreDeal } from './scoreDeal';

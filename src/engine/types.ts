@@ -94,3 +94,21 @@ export type IllegalReason =
   | 'mustTrump'
   | 'mustOvertrump'
   | 'keepUltiSeven';
+
+export interface ContractResult {
+  readonly kind: BidKind;
+  readonly won: boolean;
+  /** Final value per opponent, piros and kontra included. */
+  readonly value: number;
+}
+
+export interface DealResult {
+  readonly declarer: Player;
+  readonly bid: Bid;
+  readonly kontra: boolean;
+  /** One entry per contract of the bid, in the bid's order. */
+  readonly contracts: readonly ContractResult[];
+  /** Parti totals (card points + last trick + announcements; talon to the defenders), null when no parti contract. */
+  readonly parti: { readonly declarer: number; readonly defenders: number } | null;
+  readonly tricksWon: readonly [number, number, number];
+}

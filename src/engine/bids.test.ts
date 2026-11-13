@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { ALL_BIDS, BASE_VALUE, bidFeasible, bidValue, isHigherBid, makeBid } from './bids';
-import { c } from './testing';
+import { c } from './__tests__/helpers';
 
 describe('bid values', () => {
   it('base values per opponent', () => {

@@ -1,6 +1,6 @@
 /** Test helpers: hand-built deal states (not part of the public engine API). */
-import type { HCard, HRank, HSuit } from '../deck/cards';
-import type { Bid, DealState, Player, Trick } from './types';
+import type { HCard, HRank, HSuit } from '../../deck/cards';
+import type { Bid, DealState, Player, Trick } from '../types';
 
 export const c = (suit: HSuit, rank: HRank): HCard => ({ suit, rank });
 
@@ -39,3 +39,22 @@ export function playState(o: PlayStateOptions): DealState {
     log: [],
   };
 }
+
+/** Plays the deal to the end; `choose` picks one of the legal cards for the player to move. */
+export function playOut(
+  state: DealState,
+  choose: (state: DealState, player: Player, legal: HCard[]) => HCard,
+  legalPlays: (state: DealState, player: Player) => HCard[],
+  playCard: (state: DealState, player: Player, card: HCard) => DealState,
+): DealState {
+  let s = state;
+  while (s.phase !== 'over') s = playCard(s, s.turn, choose(s, s.turn, legalPlays(s, s.turn)));
+  return s;
+}
+
+/** A complete (fabricated) trick won by `winner`. */
+export const trickOf = (winner: Player, cards: [HCard, HCard, HCard]): Trick => ({
+  leader: winner,
+  cards: cards.map((card, i) => ({ player: ((winner + i) % 3) as Player, card })),
+  winner,
+});

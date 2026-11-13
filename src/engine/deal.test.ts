@@ -5,7 +5,7 @@ import {
   applyBid, applyKontra, canPickUp, dealCards, discard, isLegalDiscard, legalBids, mulberry32, pass, pickUp, skipKontra,
 } from './deal';
 import { cardKey } from './ranks';
-import { c } from './testing';
+import { c } from './__tests__/helpers';
 import type { DealState } from './types';
 
 const keys = (cards: readonly HCard[]) => cards.map(cardKey).sort();
