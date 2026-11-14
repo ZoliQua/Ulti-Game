@@ -1,11 +1,13 @@
 # 🎴 Ulti
 
+**English** · [Deutsch](README.de.md) · [Magyar](README.hu.md)
+
 **Ulti**, the Hungarian three-player card game, built with **React 18**, **Vite** and **TypeScript**. You play against two bots,
 **Bandi** and **Teri**, with the 32-card Hungarian (Tell) deck. The deck is our own vector redraw of the public-domain 1835 Schneider
 József design, with the Tell figures and the four season aces. The game has real bidding with the talon, the classic contracts
 (Passz, Negyvenszáz, Ulti, Betli, Durchmars, Húszszáz, Színtelen durchmars), the piros doubling, Kontra and Hungarian scoring.
 A session is ten deals. A readable log records every bid and trick.
-It runs on its own **and** as one of the fourteen games of **[Zoltan's Arcade](https://github.com/ZoliQua/Arcade-Game-Center)**.
+It runs on its own **and** as one of the fifteen games of **[Zoltan's Arcade](https://github.com/ZoliQua/Arcade-Game-Center)**.
 Play it at [dulzoltan.hu/arcade/#/play/ulti](https://dulzoltan.hu/arcade/#/play/ulti).
 
 [![CI](https://github.com/ZoliQua/Ulti-Game/actions/workflows/ci.yml/badge.svg)](https://github.com/ZoliQua/Ulti-Game/actions/workflows/ci.yml)
@@ -54,6 +56,7 @@ format through the vendored [`src/arcade/`](./src/arcade) kit.
 | 🃏 Texas Hold'em | [Texas-Holdem-Game](https://github.com/ZoliQua/Texas-Holdem-Game) | Cards |
 | 💣 Minesweeper | [Minesweeper-Game](https://github.com/ZoliQua/Minesweeper-Game) | Logic |
 | ♠️ Solitaire | [Solitaire-Game](https://github.com/ZoliQua/Solitaire-Game) | Cards |
+| 🂡 Snapszer | [Snapszer-Game](https://github.com/ZoliQua/Snapszer-Game) | Cards |
 | 🎴 **Ulti** (this repo) | [Ulti-Game](https://github.com/ZoliQua/Ulti-Game) | Cards |
 
 ## ✨ Features
@@ -76,6 +79,11 @@ format through the vendored [`src/arcade/`](./src/arcade) kit.
   lists the declarer, bid, result and your units for each deal.
 - 🤖 **Easy, Medium or Hard bots**. They only ever see their own cards and the public table. **Slow / Normal / Fast** sets their pace.
 - 🏆 **Unified arcade scoring**: your net result over ten deals becomes your score. Best, plays and wins are shared with the portal.
+- 📖 **Rules dialog** (button or **R**): goal, how to play, the rules with a card-order diagram, the bid value table built from the
+  same bid list the game offers, the scoring with every number taken from the game's own constants, dental mode and, on a phone,
+  the touch controls. Opening it pauses the session.
+- 🏁 **Finish early**: ends the session after a confirm and puts the score of the deals played so far on the leaderboard.
+- ⛶ **Full screen** for the table (on iPhone a full-screen view without the page around it).
 - ⏸️ **Pause** with P, or automatically when the tab is hidden. It freezes the bots and the timer.
 - 💾 **Autosave & resume**: the whole session survives reloads and tab closes, even mid-trick. The bots' cards are saved but never drawn face up.
 - 🌗 **Dark / light theme** shared with every arcade game (press **T**)
@@ -86,9 +94,12 @@ format through the vendored [`src/arcade/`](./src/arcade) kit.
   dentist (white coat, head mirror, mouth mirror), Bandi as the hygienist (mask and probe) and Teri as the assistant (cap). The card
   faces stay traditional.
 - 🤖 **Attract-mode demo** (`<UltiDemo />`): three bots play real deals on the portal's landing page.
-- 📱 **Phone-friendly**: the table stacks upright on portrait screens, and the hand overlaps to fit twelve cards on 360 px.
+- 📱 **Phone-friendly**: the table stacks upright on portrait screens. The hand is an overlapping fan that fits twelve cards on
+  360 px, and every card keeps a corner index with its rank and suit sign. Tap a card to raise it, tap it again to play it. Laying
+  down, bids, Pass, Kontra and Play sit in a bar at the bottom of the screen.
 - 🧪 **Tested**: deck, engine rules and scoring, bot fairness and strength, session saves, a full deal driven through the UI,
-  illegal-card reasons, the bid list, kontra timing, the talon pick-up, languages, dental mode and the demo.
+  illegal-card reasons, the bid list, kontra timing, the talon pick-up, languages, dental mode, the demo, the rules dialog, finishing
+  early and the touch controls.
 
 ## 🚀 Quick start
 
@@ -139,9 +150,15 @@ The source is the Hungarian Wikipedia article on Ulti and its value table. The g
 | **Tab** / **Shift+Tab** | Move between the cards and the buttons (**Enter** / **Space** presses them) |
 | **Enter** | Start · next deal · continue (when no button has focus) |
 | **P** / **Esc** | Pause / resume |
+| **R** | Open the rules |
 | **T** | Toggle dark / light theme (standalone page) |
 
 Hotkeys are ignored while you type in a form field or hold Cmd/Ctrl/Alt.
+
+**On a phone**: tap a card to raise it and tap it again (or the **Play** button) to play it. While discarding, tap two cards and
+then **Lay down 2 cards**. The bid list, **Pass**, **Kontra** and **Play** sit in a bar at the bottom of the screen, within reach of
+your thumb. **Full screen** above the table gives it the whole screen. On an iPhone, *Share → Add to Home Screen* also hides the
+browser bars.
 
 ## 🎯 Scoring & stats
 
@@ -155,6 +172,8 @@ difficulty factor: Easy 1 · Medium 1.5 · Hard 2
 
 The session is a **win** when you finish strictly on top, a **draw** when you are level with the better bot, and otherwise a **loss**.
 The kit records every finished session once under `arcade.stats.ulti`. A session given up through **New session** is not recorded.
+**Finish** ends the session early: the score of the deals played so far (the deal in progress does not count) goes on the
+leaderboard, even when it is 0.
 The stat strip shows the **Deal**, your **Balance**, the **Score**, **Best** and the active **Time**.
 
 ## 🤖 The bots
@@ -185,7 +204,7 @@ import { UltiGame, UltiDemo } from '@arcade/ulti';
 
 <UltiGame
   embedded                                   // hide the page title; the portal shows it
-  onGameOver={(score) => submitScore('ulti', score)}   // finished sessions with points > 0
+  onGameOver={(score, info) => submitScore('ulti', score)}   // finished sessions with points > 0; Finish: always, info = { finished: true }
   onRunEnd={(run) => console.log(run.outcome, run.score)}  // every finished session
   onStatusChange={({ status, score, seconds }) => updateHeader(status, seconds)}
 />
@@ -197,7 +216,7 @@ Status mapping:
 - `idle`: before a session (the setup card)
 - `running`: during a session
 - `paused`: while suspended or restored
-- `gameOver`: after the tenth deal
+- `gameOver`: after the tenth deal, or after **Finish**
 
 ## 🧪 Scripts
 
@@ -224,6 +243,7 @@ src/
   ui/            Table, Seat, Hand, TrickArea, BidPanel, ActionPanel, LogPanel, labels, figures/ (the three portraits)
   demo/          UltiDemo (three bots)
   UltiGame.tsx   the embeddable game (ArcadeGameProps)
+  rules.tsx      Rules dialog sections, the card-order diagram and the bid value table
   i18n.ts        en / hu / de strings
   App.tsx        standalone page: <ArcadeShell><UltiGame/></ArcadeShell>
   main.tsx       entry; loads the shared arcade.css once

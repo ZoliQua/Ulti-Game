@@ -6,6 +6,29 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-11-14
+
+### Added
+- Rules dialog (button or R): goal, how to play (mouse and keyboard, or touch on a phone), the rules with a card-order diagram for
+  trump and colourless games, a bid value table built from the game's own bid list (with the piros values), the scoring with every
+  number computed from the engine and scoring constants, dental mode and, on touch screens, the mobile tips. Opening it pauses the
+  session.
+- Finish early: a confirm, then the session ends and the score of the deals played so far (the Score panel value; the deal in
+  progress does not count) is ranked, even at 0; the game-over card says "Finished early".
+- Touch controls: the hand becomes an overlapping fan sized from its own width (twelve cards fit on 360 px), each card with a corner
+  index (rank + suit sign); tap raises a card, a second tap (or the Play button) plays it. Laying down, bids, Pass, Kontra and Play
+  sit in a sticky bar at the bottom of the screen with thumb-sized buttons; touch help in the Keys panel.
+- Full screen for the table (native where the browser allows it, a CSS full-screen view on iPhone); `viewport-fit=cover`.
+- README in English, German and Hungarian.
+
+### Changed
+- The Hungarian deck now comes from the shared arcade kit (`src/arcade/hungarian`); the season aces follow Hungarian Wikipedia:
+  piros Tavasz, tök Nyár, zöld Ősz, makk Tél (1.0.0 named them differently).
+- A bot's move is computed once, in its own task after the visible delay, instead of inside a React state updater.
+- Bid values in the bid list and its tooltips go through the locale's number format.
+- The deal, card-point and scoring numbers (hand and talon size, last trick, 20/40, kontra and failed-Ulti factors) are named
+  engine constants.
+
 ## [1.0.0] - 2026-11-14
 
 ### Added
