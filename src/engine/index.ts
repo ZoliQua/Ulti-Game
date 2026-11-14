@@ -20,8 +20,8 @@ export {
   kindValue, makeBid,
 } from './bids';
 export {
-  applyBid, applyKontra, canPickUp, dealCards, discard, isLegalDiscard, legalBids, mulberry32, nextPlayer, pass, pickUp,
+  applyBid, applyKontra, canPickUp, dealCards, discard, HAND_SIZE, TALON_SIZE, isLegalDiscard, legalBids, mulberry32, nextPlayer, pass, pickUp,
   shuffle, skipKontra,
 } from './deal';
-export { illegalReason, isDealOver, legalPlays, playCard } from './play';
-export { dealResult, partiPoints, scoreDeal } from './scoreDeal';
+export { illegalReason, isDealOver, legalPlays, PAIR_POINTS, playCard } from './play';
+export { dealResult, FAILED_ULTI_FACTOR, KONTRA_FACTOR, LAST_TRICK_POINTS, partiPoints, scoreDeal } from './scoreDeal';

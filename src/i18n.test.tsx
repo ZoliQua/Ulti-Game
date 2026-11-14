@@ -20,8 +20,8 @@ const stat = (label: string) => screen.getByText(label).parentElement?.textConte
 
 /** Keys whose text may equal English: Hungarian game terms, names and pure templates. */
 const SAME_OK: Record<'hu' | 'de', MessageKey[]> = {
-  hu: ['kontraBtn', 'talon', 'statDealValue', 'colDeal', 'logKontra', 'logTrickOpen', 'unitsLine', 'suitPiros', 'suitTok', 'suitZold', 'suitMakk'],
-  de: ['kontraBtn', 'talon', 'statDealValue', 'colDeal', 'logKontra', 'logTrickOpen', 'unitsLine', 'speedNormal'],
+  hu: ['kontraBtn', 'talon', 'statDealValue', 'colDeal', 'logKontra', 'logTrickOpen', 'unitsLine', 'suitPiros', 'suitTok', 'suitZold', 'suitMakk', 'rulesTablePiros'],
+  de: ['kontraBtn', 'talon', 'statDealValue', 'colDeal', 'logKontra', 'logTrickOpen', 'unitsLine', 'speedNormal', 'rulesTablePiros', 'rulesDiagramColourless'],
 };
 
 describe('Ulti i18n', () => {

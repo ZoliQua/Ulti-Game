@@ -20,6 +20,10 @@ export type ActionPanelProps = {
   onPass(): void;
   onKontra(): void;
   onSkipKontra(): void;
+  /** Touch layout: the panel is a bar pinned to the bottom of the screen, within thumb reach. */
+  bar?: boolean;
+  /** Touch: the card raised in the hand, offered as a Play button (null while none is raised). */
+  play?: { label: string; onPlay(): void } | null;
 };
 
 /** What the player is asked to do now, with exactly the controls the moment allows. */
@@ -38,7 +42,12 @@ export function ActionPanel(p: ActionPanelProps) {
   else prompt = tr('promptPlay');
 
   return (
-    <section className={`arc-panel ${styles.panel}`} aria-label={tr('bidTitle')} data-testid="ulti-actions">
+    <section
+      className={`arc-panel ${styles.panel}${p.bar ? ` ${styles.bar}` : ''}`}
+      aria-label={tr('bidTitle')}
+      data-testid="ulti-actions"
+      data-bar={p.bar ? 'bottom' : undefined}
+    >
       {prompt && (
         <p className={styles.prompt} data-testid="ulti-prompt">
           {mine && <span aria-hidden="true">▶ </span>}
@@ -49,6 +58,13 @@ export function ActionPanel(p: ActionPanelProps) {
         <div className={styles.buttons}>
           <button type="button" className="arc-btn arc-btn--primary" onClick={p.onDiscard}>
             {tr('discardBtn')}
+          </button>
+        </div>
+      )}
+      {mine && deal.phase === 'play' && p.play && (
+        <div className={styles.buttons}>
+          <button type="button" className="arc-btn arc-btn--primary" onClick={p.play.onPlay}>
+            {p.play.label}
           </button>
         </div>
       )}

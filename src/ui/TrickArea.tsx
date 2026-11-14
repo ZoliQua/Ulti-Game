@@ -35,7 +35,7 @@ export function TrickArea({ deal, name, lang, tr, dental, talon }: TrickAreaProp
         <div className={styles.bid} data-testid="ulti-current-bid">
           <span className={styles.caption}>{tr('currentBid')}</span>
           {deal.bid && by !== null ? (
-            <span title={bidInfo(deal.bid, tr)}>
+            <span title={bidInfo(deal.bid, tr, lang)}>
               {deal.bid.trump && <SuitIcon suit={deal.bid.trump} />} <strong>{bidLabel(deal.bid, tr, lang)}</strong> · {name(by)}
               {deal.kontra && <strong className={styles.kontra}> · Kontra</strong>}
             </span>

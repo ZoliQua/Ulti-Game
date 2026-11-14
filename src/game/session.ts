@@ -40,6 +40,8 @@ export interface UltiSession {
   readonly history: readonly DealRecord[];
   /** playing → dealOver (result shown) → next deal …; finished after the 10th deal. */
   readonly phase: 'playing' | 'dealOver' | 'finished';
+  /** Set when the player ended the session with Finish before the last deal (never saved: a finished session is dropped). */
+  readonly finishedEarly?: boolean;
 }
 
 export const dealerFor = (s: Pick<UltiSession, 'firstDealer'>, dealNo: number): Player =>
@@ -119,6 +121,15 @@ export function nextDeal(s: UltiSession): UltiSession {
   if (s.phase !== 'dealOver') throw new Error('The deal is not over (or the session is finished)');
   const dealNo = s.dealNo + 1;
   return { ...s, dealNo, deal: dealCards(dealSeed(s.seed, dealNo), dealerFor(s, dealNo)), phase: 'playing' };
+}
+
+/**
+ * Finish early: the session ends now and counts the deals played so far (the deal in progress is dropped).
+ * A finished session stays as it is.
+ */
+export function finishEarly(s: UltiSession): UltiSession {
+  if (s.phase === 'finished') return s;
+  return { ...s, phase: 'finished', finishedEarly: true };
 }
 
 /** Arcade score of the session so far (the human's units). */

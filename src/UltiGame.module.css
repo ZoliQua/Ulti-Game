@@ -2,6 +2,31 @@
   max-width: 1180px;
 }
 
+.tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: -4px;
+}
+
+/* Phones: one compact row of Rules · Finish · Full screen (each still ≥ 44 px tall). */
+@media (max-width: 520px) {
+  .tools {
+    flex-wrap: nowrap;
+    gap: 6px;
+  }
+
+  .tools > :global(.arc-btn) {
+    flex: 1 1 auto;
+    min-width: 0;
+    justify-content: center;
+    gap: 5px;
+    padding-inline: 6px;
+    font-size: 12.5px;
+    white-space: nowrap;
+  }
+}
+
 .layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 300px;

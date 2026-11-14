@@ -64,3 +64,32 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Touch: thumb-sized bid buttons; the list scrolls inside the bottom bar instead of pushing the table away. */
+@media (pointer: coarse) {
+  .rows {
+    max-height: 28vh;
+    max-height: 28dvh;
+    overscroll-behavior: contain;
+  }
+
+  .bidBtn {
+    min-height: 44px;
+    font-size: 13px;
+  }
+}
+
+/* Narrow touch screens: the suit sign (a shape) names the suit; the word stays in the button's accessible name. */
+@media (pointer: coarse) and (max-width: 520px) {
+  .suitName {
+    display: none;
+  }
+
+  .hint {
+    display: none;
+  }
+
+  .bidBtn {
+    gap: 6px;
+  }
+}
