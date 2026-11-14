@@ -19,7 +19,7 @@ import {
   TRUMP_ORDER,
 } from './engine';
 import { arcadeScore, DIFFICULTY_FACTOR, MAX_SCORE, POINTS_PER_UNIT } from './game/scoring';
-import { DEALS_PER_SESSION } from './game/session';
+import { DEALS_PER_SESSION, MIN_FINISH_DEALS } from './game/session';
 import { findSession, humanTurn, save } from './test/fixtures';
 import { isUltiSessionLoad } from './test/i18nHelpers';
 import { setCoarsePointer } from './test/touchEnv';
@@ -122,12 +122,17 @@ describe('Ulti rules dialog', () => {
     );
     expect(text).toContain('Közepes ×1,5');
     expect(text).toContain(`Például Nehéz szinten +${n(10, 'hu')} egység ${n(ex, 'hu')} pontot ér.`);
-    expect(text).toContain('az eddig lejátszott osztások pontszáma kerül a ranglistára');
+    expect(text).toContain(
+      `A Befejezés két osztás között lezárja a játszmát. Ha már legalább ${n(MIN_FINISH_DEALS, 'hu')} osztást lejátszottál a ${n(DEALS_PER_SESSION, 'hu')}-ből, az eddigi pontszámod kerül a ranglistára, előtte ${n(0, 'hu')} pont.`,
+    );
 
     act(() => applyLang('de'));
     text = dialog().textContent ?? '';
     expect(text).toContain(
       `Deine Punktzahl nach ${n(DEALS_PER_SESSION, 'de')} Runden: deine Netto-Einheiten × ${n(POINTS_PER_UNIT, 'de')} × der Schwierigkeitsfaktor (Leicht ×${n(DIFFICULTY_FACTOR.easy, 'de')}, Mittel ×${n(DIFFICULTY_FACTOR.medium, 'de')}, Schwer ×${n(DIFFICULTY_FACTOR.hard, 'de')}), mindestens ${n(0, 'de')} und höchstens ${n(MAX_SCORE, 'de')} Punkte.`,
+    );
+    expect(text).toContain(
+      `„Beenden” gibt es zwischen den Runden und schließt die Partie vorzeitig ab. Nach mindestens ${n(MIN_FINISH_DEALS, 'de')} der ${n(DEALS_PER_SESSION, 'de')} Runden kommt deine bisherige Punktzahl in die Bestenliste, davor ${n(0, 'de')} Punkte.`,
     );
     expect(text).toContain(`Zum Beispiel bringen +${n(10, 'de')} Einheiten auf der Stufe Schwer ${n(ex, 'de')} Punkte.`);
   });

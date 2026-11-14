@@ -34,18 +34,20 @@ import type { Action } from './bots/actions';
 import { isLevel, LEVELS, type Level } from './bots/profiles';
 import { talonOwner } from './bots/view';
 import type { HCard, HSuit } from './arcade';
-import { BASE_VALUE, canPickUp, cardKey, illegalReason, isLegalDiscard, type Bid, type BidKind, type DealState, type Player } from './engine';
+import { BASE_VALUE, canPickUp, cardKey, illegalReason, isLegalDiscard, TALON_SIZE, type Bid, type BidKind, type DealState, type Player } from './engine';
 import { sessionOutcome } from './game/scoring';
 import {
   act,
   botStep,
+  canFinishEarly,
   DEALS_PER_SESSION,
   finishEarly,
+  MIN_FINISH_DEALS,
+  rankedScore,
   isBotTurn,
   isUltiSession,
   nextDeal,
   SESSION_SCHEMA,
-  sessionScore,
   startSession,
   type UltiSession,
 } from './game/session';
@@ -55,7 +57,7 @@ import { useRulesSections } from './rules';
 import { ActionPanel } from './ui/ActionPanel';
 import { DentalToggle } from './ui/DentalToggle';
 import { SeatFigure } from './ui/figures/SeatFigure';
-import { bidLabel, formatUnits, KIND_INFO, KIND_NAME, REASON_KEY, suitName, type Tr } from './ui/labels';
+import { bidLabel, formatUnits, KIND_NAME, kindInfo, REASON_KEY, suitName, type Tr } from './ui/labels';
 import { LogPanel } from './ui/LogPanel';
 import { Table } from './ui/Table';
 import type { TalonView } from './ui/TrickArea';
@@ -69,7 +71,7 @@ export const BOT_NAMES = { 1: 'Bandi', 2: 'Teri' } as const;
 
 type UiPhase = 'idle' | 'live' | 'paused';
 /** A message worded at render time, so a language switch re-words it. */
-type Notice = { key: MessageKey; bid?: Bid | null; suit?: HSuit | null; led?: HSuit | null };
+type Notice = { key: MessageKey; bid?: Bid | null; suit?: HSuit | null; led?: HSuit | null; n?: number };
 
 const DIFF_LABEL: Record<Level, MessageKey> = { easy: 'diffEasy', medium: 'diffMedium', hard: 'diffHard' };
 const SPEED_LABEL: Record<Speed, MessageKey> = { slow: 'speedSlow', normal: 'speedNormal', fast: 'speedFast' };
@@ -144,7 +146,9 @@ export function UltiGame(props: ArcadeGameProps = {}) {
   const finished = session?.phase === 'finished';
   const status: ArcadeStatus = ui === 'idle' || !session ? 'idle' : finished ? 'gameOver' : ui === 'paused' ? 'paused' : 'running';
   const running = status === 'running';
-  const score = session ? sessionScore(session) : 0;
+  // The Score panel (and the leaderboard at the end) shows the ranked score; it differs from the session score only
+  // after an early finish with too few deals.
+  const score = session ? rankedScore(session) : 0;
 
   const seconds = useRunTimer(running && !finishOpen, runKey, runKey === 0 && resumable ? (restored?.seconds ?? 0) : 0);
   const stats = useArcadeRun({
@@ -262,7 +266,7 @@ export function UltiGame(props: ArcadeGameProps = {}) {
         setNotice(null);
         setSelected((sel) => {
           if (sel.some((c) => cardKey(c) === cardKey(card))) return sel.filter((c) => cardKey(c) !== cardKey(card));
-          return [...sel, card].slice(-2);
+          return [...sel, card].slice(-TALON_SIZE);
         });
         return;
       }
@@ -286,7 +290,7 @@ export function UltiGame(props: ArcadeGameProps = {}) {
 
   const onDiscard = useCallback(() => {
     if (!deal) return;
-    if (selected.length !== 2) return setNotice({ key: 'discardNeedTwo' });
+    if (selected.length !== TALON_SIZE) return setNotice({ key: 'discardNeedTwo', n: TALON_SIZE });
     if (!isLegalDiscard(deal, selected)) return setNotice({ key: 'discardNoBid', bid: deal.bid });
     doAct({ type: 'discard', cards: [selected[0], selected[1]] });
   }, [deal, selected, doAct]);
@@ -347,6 +351,7 @@ export function UltiGame(props: ArcadeGameProps = {}) {
         bid: notice.bid ? bidLabel(notice.bid, tr, lang) : '—',
         suit: notice.suit ? suitName(notice.suit, tr) : '—',
         led: notice.led ? suitName(notice.led, tr) : '—',
+        n: notice.n === undefined ? '—' : fmt(notice.n),
       })
     : null;
   const keyRows = useMemo(
@@ -448,6 +453,11 @@ export function UltiGame(props: ArcadeGameProps = {}) {
   }
 
   const inSession = session !== null && ui !== 'idle';
+  let finishNote = '';
+  if (inSession && session && !finished) {
+    if (!canFinishEarly(session)) finishNote = tr('finishNoteDeal');
+    else if (session.history.length < MIN_FINISH_DEALS) finishNote = tr('finishNoteMin', { min: fmt(MIN_FINISH_DEALS), zero: fmt(0) });
+  }
   const style = { '--game-color': 'var(--game-ulti)' } as CSSProperties;
   const figure = (p: Player) => <SeatFigure seat={p} dental={dental} title={tr(FIGURE_TITLE[dental ? 'dental' : 'classic'][p])} />;
 
@@ -484,8 +494,18 @@ export function UltiGame(props: ArcadeGameProps = {}) {
 
       <div className={styles.tools}>
         <RulesButton sections={rulesSections} gameId="ulti" onOpenChange={onRulesOpen} />
-        <FinishButton score={score} visible={inSession && !finished} onFinish={finish} onOpenChange={setFinishOpen} />
+        <FinishButton
+          score={session ? rankedScore(finishEarly(session)) : 0}
+          visible={inSession && session !== null && canFinishEarly(session)}
+          onFinish={finish}
+          onOpenChange={setFinishOpen}
+        />
         <FullscreenButton immersive={immersive} />
+        {finishNote && (
+          <p className={styles.finishNote} data-testid="ulti-finish-note">
+            {finishNote}
+          </p>
+        )}
       </div>
 
       <div className={styles.layout}>
@@ -630,7 +650,7 @@ export function UltiGame(props: ArcadeGameProps = {}) {
                   <dt>
                     {KIND_NAME[kind]} <span className={styles.value}>{fmt(BASE_VALUE[kind])}</span>
                   </dt>
-                  <dd>{tr(KIND_INFO[kind])}</dd>
+                  <dd>{kindInfo(kind, tr, lang)}</dd>
                 </div>
               ))}
               <div>

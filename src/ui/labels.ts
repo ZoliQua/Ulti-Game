@@ -1,5 +1,5 @@
 import { formatNumber, type HRank, type HSuit, type Lang, type MessageVars } from '../arcade';
-import { bidValue, type Bid, type BidKind, type IllegalReason } from '../engine';
+import { bidValue, PAIR_POINTS, PARTI_TARGET, type Bid, type BidKind, type IllegalReason } from '../engine';
 import type { MessageKey } from '../i18n';
 
 export type Tr = (key: MessageKey, vars?: MessageVars) => string;
@@ -32,6 +32,12 @@ export const SUIT_KEY: Readonly<Record<HSuit, MessageKey>> = {
   makk: 'suitMakk',
 };
 
+/** The explanation of a contract, with its point numbers (20/40, the 100-point target) from the engine constants. */
+export function kindInfo(kind: BidKind, tr: Tr, lang: Lang): string {
+  const num = (n: number) => formatNumber(n, lang);
+  return tr(KIND_INFO[kind], { twenty: num(PAIR_POINTS.other), forty: num(PAIR_POINTS.trump), target: num(PARTI_TARGET) });
+}
+
 export const suitName = (suit: HSuit, tr: Tr): string => tr(SUIT_KEY[suit]);
 
 /**
@@ -47,7 +53,7 @@ export function bidLabel(bid: Bid, tr: Tr, lang: Lang): string {
 
 /** Tooltip: what each contract of the bid means (plus the piros doubling), and its value. */
 export function bidInfo(bid: Bid, tr: Tr, lang: Lang): string {
-  const lines = bid.kinds.map((k) => tr(KIND_INFO[k]));
+  const lines = bid.kinds.map((k) => kindInfo(k, tr, lang));
   if (bid.trump === 'piros') lines.push(tr('infoPiros'));
   return `${lines.join('\n')}\n${tr('valueTitle')}: ${formatNumber(bidValue(bid), lang)}`;
 }

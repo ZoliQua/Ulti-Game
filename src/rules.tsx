@@ -31,7 +31,7 @@ import {
   type BidKind,
 } from './engine';
 import { arcadeScore, DIFFICULTY_FACTOR, MAX_SCORE, POINTS_PER_UNIT } from './game/scoring';
-import { DEALS_PER_SESSION } from './game/session';
+import { DEALS_PER_SESSION, MIN_FINISH_DEALS } from './game/session';
 import { MESSAGES, type MessageKey } from './i18n';
 import { bidLabel, formatUnits, KIND_NAME, RANK_NAME, RANK_SHORT } from './ui/labels';
 import { SuitIcon } from './ui/SuitIcon';
@@ -226,7 +226,7 @@ export function useRulesSections(): RulesSection[] {
           </p>
           <p>{m('rulesScoringScoreExample', { units: num(exampleUnits), level: level('hard'), points: num(arcadeScore(exampleUnits, 'hard')) })}</p>
           <p>{m('rulesScoringOutcome')}</p>
-          <p>{m('rulesScoringFinish')}</p>
+          <p>{m('rulesScoringFinish', { min: num(MIN_FINISH_DEALS), deals: num(DEALS_PER_SESSION), zero: num(0) })}</p>
         </>
       ),
     },

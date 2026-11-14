@@ -136,3 +136,13 @@
 .fan .dim .corner {
   opacity: 0.7;
 }
+
+/* Landscape phones: the fan's size also follows the free height. */
+@media (orientation: landscape) and (max-height: 520px) {
+  .fan {
+    --card-w: min(clamp(40px, 16cqw, 70px), 13vh);
+    --card-w: min(clamp(40px, 16cqw, 70px), 13dvh);
+    padding-top: 18px;
+    padding-bottom: 2px;
+  }
+}

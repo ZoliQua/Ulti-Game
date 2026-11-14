@@ -47,3 +47,12 @@
   flex: 1 1 0;
   min-height: 48px;
 }
+
+/* Landscape phones: the panel sits beside the table (top of the side column), not over it. */
+@media (orientation: landscape) and (max-height: 520px) {
+  .bar {
+    position: static;
+    box-shadow: none;
+    padding-bottom: 10px;
+  }
+}

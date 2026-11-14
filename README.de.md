@@ -87,8 +87,8 @@ Speicherformat über das eingebundene [`src/arcade/`](./src/arcade)-Kit.
 - 📖 **Regeln-Fenster** (Knopf oder **R**): Ziel, so spielst du, die Regeln mit einem Diagramm der Kartenfolge, die Wertetabelle der
   Ansagen aus derselben Gebotsliste, die das Spiel anbietet, die Punktewertung mit jeder Zahl aus den Konstanten des Spiels, der
   Zahnmodus und auf dem Handy die Touch-Steuerung. Beim Öffnen hält die Partie an.
-- 🏁 **Vorzeitig beenden**: schließt die Partie nach einer Rückfrage ab und trägt die Punktzahl der bisher gespielten Runden in die
-  Bestenliste ein.
+- 🏁 **Vorzeitig beenden**: zwischen zwei Runden möglich; nach einer Rückfrage endet die Partie. Ab der 5. gespielten Runde (der
+  Hälfte von zehn) kommt die bisherige Punktzahl in die Bestenliste, davor 0 Punkte.
 - ⛶ **Vollbild** für den Tisch (auf dem iPhone eine bildschirmfüllende Ansicht ohne die Seite drumherum).
 - ⏸️ **Pause** mit P, oder automatisch, wenn der Tab im Hintergrund ist. Bots und Uhr halten an.
 - 💾 **Autospeichern & Fortsetzen**: Die ganze Partie übersteht Neuladen und Schließen des Tabs, sogar mitten im Stich. Die Karten
@@ -183,8 +183,10 @@ Schwierigkeitsfaktor: Leicht 1 · Mittel 1,5 · Schwer 2
 
 Die Partie ist ein **Sieg**, wenn du allein vorn liegst, ein **Unentschieden**, wenn du mit dem besseren Bot gleichauf bist, und
 sonst eine **Niederlage**. Das Kit zeichnet jede beendete Partie einmal unter `arcade.stats.ulti` auf. Eine über **Neue Partie**
-aufgegebene Partie wird nicht gewertet. **Beenden** schließt die Partie vorzeitig ab: Die Punktzahl der bisher gespielten Runden
-(die laufende Runde zählt nicht) kommt in die Bestenliste, auch wenn sie 0 ist.
+aufgegebene Partie wird nicht gewertet. **Beenden** gibt es nur zwischen zwei Runden, nie mitten in einer, so kann man einem
+scheiternden Spiel nicht entkommen. Es schließt die Partie vorzeitig ab: Nach mindestens `MIN_FINISH_DEALS` = ⌈10 / 2⌉ = 5
+gespielten Runden kommt die bisherige Punktzahl in die Bestenliste, davor 0 Punkte, so lässt sich eine glückliche erste Runde
+nicht sichern.
 Die Statusleiste zeigt die **Runde**, deinen **Stand**, die **Punkte**, den **Bestwert** und die aktive **Zeit**.
 
 ## 🤖 Die Bots

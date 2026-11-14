@@ -4,6 +4,8 @@ import type { Bid, BidKind, DealResult, DealState, Player } from './types';
 
 /** Parti points for the last trick. */
 export const LAST_TRICK_POINTS = 10;
+/** Negyvenszáz and Húszszáz: the declarer needs at least this many parti points. */
+export const PARTI_TARGET = 100;
 /** Kontra multiplies every contract of the game. */
 export const KONTRA_FACTOR = 2;
 /** A failed Ulti (bukott ulti) pays this many times its value. */
@@ -34,7 +36,7 @@ function contractWon(state: DealState, kind: BidKind, parti: { declarer: number;
       return parti.declarer > parti.defenders;
     case 'negyvenszaz':
     case 'huszszaz':
-      return parti.declarer >= 100;
+      return parti.declarer >= PARTI_TARGET;
     case 'betli':
       return all && tricks.every((t) => t.winner !== declarer);
     case 'durchmars':

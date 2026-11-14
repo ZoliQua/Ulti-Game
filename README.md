@@ -82,7 +82,8 @@ format through the vendored [`src/arcade/`](./src/arcade) kit.
 - 📖 **Rules dialog** (button or **R**): goal, how to play, the rules with a card-order diagram, the bid value table built from the
   same bid list the game offers, the scoring with every number taken from the game's own constants, dental mode and, on a phone,
   the touch controls. Opening it pauses the session.
-- 🏁 **Finish early**: ends the session after a confirm and puts the score of the deals played so far on the leaderboard.
+- 🏁 **Finish early**: offered between two deals; after a confirm it ends the session. From the 5th completed deal (half of the ten)
+  the score so far goes on the leaderboard, before that 0 points.
 - ⛶ **Full screen** for the table (on iPhone a full-screen view without the page around it).
 - ⏸️ **Pause** with P, or automatically when the tab is hidden. It freezes the bots and the timer.
 - 💾 **Autosave & resume**: the whole session survives reloads and tab closes, even mid-trick. The bots' cards are saved but never drawn face up.
@@ -172,8 +173,9 @@ difficulty factor: Easy 1 · Medium 1.5 · Hard 2
 
 The session is a **win** when you finish strictly on top, a **draw** when you are level with the better bot, and otherwise a **loss**.
 The kit records every finished session once under `arcade.stats.ulti`. A session given up through **New session** is not recorded.
-**Finish** ends the session early: the score of the deals played so far (the deal in progress does not count) goes on the
-leaderboard, even when it is 0.
+**Finish** is offered only between two deals, never during one, so a failing contract cannot be escaped. It ends the session
+early: after at least `MIN_FINISH_DEALS` = ⌈10 / 2⌉ = 5 completed deals the score so far goes on the leaderboard; before that it
+ranks 0 points, so one lucky first deal cannot be locked in.
 The stat strip shows the **Deal**, your **Balance**, the **Score**, **Best** and the active **Time**.
 
 ## 🤖 The bots

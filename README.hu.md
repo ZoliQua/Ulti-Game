@@ -84,7 +84,8 @@ használja a beemelt [`src/arcade/`](./src/arcade) készleten keresztül.
 - 📖 **Szabályok ablak** (gomb vagy **R**): cél, így játssz, a szabályok a lapsorrend ábrájával, a bemondások értéktáblázata
   ugyanabból a licitlistából, amit a játék kínál, a pontozás – minden szám a játék saját állandóiból –, a fogas mód és telefonon az
   érintéses irányítás. Megnyitásakor a játszma megáll.
-- 🏁 **Idő előtti befejezés**: megerősítés után lezárja a játszmát, és az eddig lejátszott osztások pontszáma kerül a ranglistára.
+- 🏁 **Idő előtti befejezés**: két osztás között érhető el, és megerősítés után lezárja a játszmát. Az 5. lejátszott osztástól (a tíz
+  fele) az eddigi pontszám kerül a ranglistára, előtte 0 pont.
 - ⛶ **Teljes képernyő** az asztalnak (iPhone-on az oldal többi része nélküli, teljes képernyős nézet).
 - ⏸️ **Szünet** a P billentyűvel, vagy magától, ha a lap a háttérbe kerül. A gépi játékosok és az óra is megállnak.
 - 💾 **Automatikus mentés és folytatás**: az egész játszma túléli az újratöltést és a lap bezárását, akár ütés közben is. A gépi
@@ -179,8 +180,9 @@ nehézségi szorzó: Könnyű 1 · Közepes 1,5 · Nehéz 2
 
 A játszma **győzelem**, ha egyedül végzel az élen, **döntetlen**, ha a jobbik géppel holtversenyben vagy, egyébként **vereség**.
 A készlet minden befejezett játszmát egyszer rögzít az `arcade.stats.ulti` kulcs alatt. Az **Új játszma** gombbal feladott játszma
-nem kerül be. A **Befejezés** idő előtt lezárja a játszmát: az eddig lejátszott osztások pontszáma (a folyamatban lévő osztás nem
-számít) akkor is a ranglistára kerül, ha 0.
+nem kerül be. A **Befejezés** csak két osztás között érhető el, osztás közben soha, így egy bukófélben lévő bemondás elől nem
+lehet kilépni. Idő előtt lezárja a játszmát: legalább `MIN_FINISH_DEALS` = ⌈10 / 2⌉ = 5 lejátszott osztás után az eddigi
+pontszám kerül a ranglistára, előtte 0 pont, így egy szerencsés első osztást sem lehet bebiztosítani.
 A statisztikasáv mutatja az **Osztás**t, az **Egyenleg**edet, a **Pont**ot, a **Rekord**ot és az aktív **Idő**t.
 
 ## 🤖 A gépi játékosok

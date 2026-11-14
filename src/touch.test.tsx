@@ -120,12 +120,28 @@ describe('Ulti touch controls', () => {
         tap(handButtons()[i]);
         tap(handButtons()[j]);
         expect(handButtons().filter((b) => b.getAttribute('aria-pressed') === 'true')).toHaveLength(2);
-        tap(within(bar()).getByRole('button', { name: en.discardBtn }));
+        tap(within(bar()).getByRole('button', { name: en.discardBtn.replace('{n}', '2') }));
         if (isUltiSessionLoad()?.deal.phase !== 'discard') break outer;
         handButtons().filter((b) => b.getAttribute('aria-pressed') === 'true').forEach((b) => tap(b));
       }
     expect(isUltiSessionLoad()?.deal.phase).toBe('declare');
     expect(within(bar()).getByTestId('ulti-bid-panel')).toBeTruthy();
+  });
+
+  it('while bidding, the bar drops the prompt sentence so the list covers less of the hand', () => {
+    resume(findSession((x) => humanTurn(x, 'declare')));
+    expect(within(bar()).getByTestId('ulti-bid-panel')).toBeTruthy();
+    expect(within(bar()).queryByTestId('ulti-prompt')).toBeNull();
+    expect(bar().getAttribute('data-phase')).toBe('declare');
+  });
+
+  it('a piros bid shows its ×2 as a separate badge next to the value', () => {
+    resume(findSession((x) => humanTurn(x, 'declare') && x.deal.hands[0].some((c) => c.suit === 'piros')));
+    const btn = bar().querySelector('[data-bid$=":piros"]');
+    expect(btn).toBeTruthy();
+    const badge = btn!.querySelector('[data-mult]');
+    expect(badge?.textContent).toBe('×2');
+    expect(btn!.querySelector('[data-value]')?.textContent).toMatch(/^\d+$/);
   });
 
   it('bidding, passing and kontra are buttons in the bottom bar', () => {
