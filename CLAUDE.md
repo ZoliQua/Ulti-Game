@@ -18,10 +18,11 @@
   * `npm run lint` — ESLint (flat config, typescript-eslint)
   * `npm test` — Vitest (engine and component tests, jsdom)
   * `npm run check` — lint → typecheck → test → build (same as CI)
-* **Deck**: the 32-card Hungarian (Tell) deck in `src/deck/` — our own SVG redraw after the public-domain 1835 Schneider
+* **Deck**: the 32-card Hungarian (Tell) deck lives in the shared kit (`src/arcade/hungarian/`, imported from `./arcade`;
+  pure modules import `arcade/hungarian/cards` directly so they stay React-free) — our own SVG redraw after the public-domain 1835 Schneider
   József design (never a copy of a modern scan). `HSuit` `piros | tok | zold | makk`, `HRank` `VII … X | also | felso | kiraly | asz`,
-  `HUNGARIAN_DECK` (32), `HungarianCard`, `hCardLabel(card, lang)`. Aces are the seasons: piros = Nyár, tök = Ősz,
-  zöld = Tavasz, makk = Tél. Suit signs differ by shape (heart, bell, leaf, acorn), never by colour alone.
+  `HUNGARIAN_DECK` (32), `HungarianCard`, `hCardLabel(card, lang)`. Aces are the seasons: piros = Tavasz, tök = Nyár,
+  zöld = Ősz, makk = Tél. Suit signs differ by shape (heart, bell, leaf, acorn), never by colour alone.
 * **Rules**: pure functions in `src/engine/` (no React).
 * **Communication**: respond to the user in **Hungarian** in chat, even though this file and the codebase are in English.
 
@@ -42,8 +43,7 @@ A correct, type-safe Ulti against two bots that runs standalone and embeds uncha
 ```
 src/
   arcade/              # VENDORED shared kit from Arcade-Game-Center/packages/kit — never edit here
-  deck/                # Hungarian deck: cards.ts (types, deck, labels), HungarianCard.tsx, art/ (figures, season aces,
-                       # suit signs, shared frame/banner), Gallery.tsx (dev-only ?gallery=1)
+  deck/                # Gallery.tsx (dev-only ?gallery=1 review of the kit's Hungarian deck)
   engine/              # pure rules, no React
   bots/                # BotView (public table + own cards only), bidding and play at three levels
   game/                # session (10 deals, save guard), arcade scoring, bot pacing (speed.ts), strength sim

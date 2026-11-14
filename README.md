@@ -58,8 +58,9 @@ format through the vendored [`src/arcade/`](./src/arcade) kit.
 
 ## ✨ Features
 
-- 🎴 **The Hungarian (Tell) deck**: our own SVG redraw after the 1835 Schneider design. The Alsó, Felső and Király show the Tell story
-  figures, and the aces show the seasons (piros Nyár, tök Ősz, zöld Tavasz, makk Tél). Each suit has its own shape (heart, bell, leaf,
+- 🎴 **The Hungarian (Tell) deck** (shared with the other Hungarian-deck games through the arcade kit): our own SVG redraw after the
+  1835 Schneider design, double-headed like the real deck. Each Alsó and Felső shows its own Tell character, the kings ride horses,
+  and the aces show the seasons (piros Tavasz, tök Nyár, zöld Ősz, makk Tél). Each suit has its own shape (heart, bell, leaf,
   acorn), so colour is never needed to tell the suits apart.
 - 🗣️ **Real bidding**: the forehand takes the talon and lays two cards down. Each player in turn picks up the talon to bid higher, or passes.
   The bid list offers **only** bids that are higher than the current one and possible with your cards. Each bid is a contract name
@@ -216,7 +217,7 @@ Status mapping:
 ```
 src/
   arcade/        vendored Zoltan's Arcade kit — do not edit here (see its README)
-  deck/          the Hungarian deck: cards.ts, HungarianCard.tsx, art/ (figures, season aces, suit signs, back)
+  deck/          Gallery.tsx — dev-only deck review page (?gallery=1); the deck itself lives in the kit (src/arcade/hungarian)
   engine/        pure Ulti rules: deal, bids, talon, kontra, legal play with reasons, deal result and scoring
   bots/          BotView (the only bridge to bot code), bidding and play at three levels, deal sampling
   game/          session (10 deals, saves, guard), arcade scoring, bot pacing (speed), strength simulation
