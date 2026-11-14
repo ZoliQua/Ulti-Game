@@ -45,7 +45,10 @@ src/
   deck/                # Hungarian deck: cards.ts (types, deck, labels), HungarianCard.tsx, art/ (figures, season aces,
                        # suit signs, shared frame/banner), Gallery.tsx (dev-only ?gallery=1)
   engine/              # pure rules, no React
-  demo/UltiDemo.tsx
+  bots/                # BotView (public table + own cards only), bidding and play at three levels
+  game/                # session (10 deals, save guard), arcade scoring, bot pacing (speed.ts), strength sim
+  ui/                  # Table, Seat, Hand, TrickArea, BidPanel, ActionPanel, LogPanel, labels; figures/ (three portraits)
+  demo/UltiDemo.tsx    # three bots, writes nothing to storage
   UltiGame.tsx         # embeddable game, ArcadeGameProps
   App.tsx              # exactly <ArcadeShell gameId="ulti"><UltiGame /></ArcadeShell> (+ dev-only gallery switch)
   main.tsx             # imports arcade/arcade.css once, applyTheme(readTheme())

@@ -11,6 +11,7 @@ import {
   shouldIgnoreKey,
   StatPanel,
   useArcadeRun,
+  useDental,
   useKitMessages,
   useLang,
   useMessages,
@@ -43,6 +44,8 @@ import {
 import { botDelay, readSpeed, SPEED_FACTOR, SPEEDS, writeSpeed, type Speed } from './game/speed';
 import { MESSAGES, type MessageKey } from './i18n';
 import { ActionPanel } from './ui/ActionPanel';
+import { DentalToggle } from './ui/DentalToggle';
+import { SeatFigure } from './ui/figures/SeatFigure';
 import { bidLabel, formatUnits, KIND_INFO, KIND_NAME, REASON_KEY, suitName, type Tr } from './ui/labels';
 import { LogPanel } from './ui/LogPanel';
 import { Table } from './ui/Table';
@@ -90,17 +93,10 @@ function Segmented<T extends string>({ label, value, options, names, onChange }:
   );
 }
 
-/** Placeholder medallion until the portraits land. */
-function Monogram({ name }: { name: string }) {
-  return (
-    <svg viewBox="0 0 64 64" aria-hidden="true">
-      <circle cx="32" cy="32" r="30" fill="#f3e7c9" stroke="#2e1d12" strokeWidth="2" />
-      <text x="32" y="41" textAnchor="middle" fontFamily="Georgia, serif" fontSize="26" fontWeight="700" fill="#2e1d12">
-        {name.slice(0, 1)}
-      </text>
-    </svg>
-  );
-}
+const FIGURE_TITLE: Record<'classic' | 'dental', Record<Player, MessageKey>> = {
+  classic: { 0: 'figurePlayer', 1: 'figureBandi', 2: 'figureTeri' },
+  dental: { 0: 'figureDentist', 1: 'figureHygienist', 2: 'figureAssistant' },
+};
 
 /** The talon as this screen may show it. */
 function talonView(deal: DealState, peek: boolean, tr: Tr): TalonView {
@@ -115,6 +111,7 @@ export function UltiGame(props: ArcadeGameProps = {}) {
   const tr = useMessages(MESSAGES);
   const k = useKitMessages();
   const [lang] = useLang();
+  const [dental] = useDental();
   const restored = useRestoredSession<UltiSession>('ulti', SESSION_SCHEMA, isUltiSession);
   const resumable = restored !== null && restored.data.phase !== 'finished';
 
@@ -401,7 +398,7 @@ export function UltiGame(props: ArcadeGameProps = {}) {
 
   const inSession = session !== null && ui !== 'idle';
   const style = { '--game-color': 'var(--game-ulti)' } as CSSProperties;
-  const figure = (p: Player) => <Monogram name={name(p)} />;
+  const figure = (p: Player) => <SeatFigure seat={p} dental={dental} title={tr(FIGURE_TITLE[dental ? 'dental' : 'classic'][p])} />;
 
   return (
     <div className={`arc-game ${styles.game}`} style={style} data-testid="ulti-game">
@@ -445,7 +442,7 @@ export function UltiGame(props: ArcadeGameProps = {}) {
                 figure={figure}
                 lang={lang}
                 tr={tr}
-                dental={false}
+                dental={dental}
                 talon={talonView(deal, peek, tr)}
                 turn={session.phase === 'playing' ? deal.turn : null}
                 hand={{
@@ -557,6 +554,7 @@ export function UltiGame(props: ArcadeGameProps = {}) {
                   writeSpeed(v);
                 }}
               />
+              <DentalToggle />
             </div>
           </section>
 
