@@ -107,7 +107,7 @@ describe('decide', () => {
       });
     }
     console.info(`hard decision: worst ${worst.toFixed(1)} ms, mean ${(total / count).toFixed(1)} ms over ${count}`);
-    // Generous ceiling for slow CI machines; the laptop numbers are in the report.
-    expect(worst).toBeLessThan(600);
+    // Ceiling with headroom for slow CI machines (laptop: worst ≈ 70 ms).
+    expect(worst).toBeLessThan(300);
   });
 });

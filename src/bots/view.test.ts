@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { cardKey, sameCard, type DealState, type Player } from '../engine';
+import {
+  applyBid, cardKey, dealCards, discard, isLegalDiscard, makeBid, nextPlayer, pickUp, sameCard, type DealState, type Player,
+} from '../engine';
 import type { HCard } from '../deck/cards';
 import { driveDeal } from './testkit';
 import { toBotView } from './view';
@@ -63,5 +65,36 @@ describe('toBotView', () => {
         else expect(view.talon).toBeNull();
       },
     });
+  });
+
+  it('talon owner: A discards and bids, B picks up — A’s view never holds the talon again', () => {
+    let s = dealCards(21, 0);
+    const a = s.turn;
+    const b = nextPlayer(a);
+    const hand = s.hands[a];
+    // The first legal pair of discards of A's 12 cards.
+    let down: [typeof hand[number], typeof hand[number]] | null = null;
+    for (let i = 0; i < hand.length && !down; i += 1)
+      for (let j = i + 1; j < hand.length && !down; j += 1) if (isLegalDiscard(s, [hand[i], hand[j]])) down = [hand[i], hand[j]];
+    s = discard(s, down!);
+    expect(toBotView(s, a).talon).toEqual(down);
+    s = applyBid(s, makeBid(['passz'], 'makk'));
+    expect(toBotView(s, a).talon).toEqual(down);
+    expect(toBotView(s, b).talon).toBeNull();
+    s = pickUp(s);
+    expect(s.turn).toBe(b);
+    const aView = toBotView(s, a);
+    expect(aView.talon).toBeNull();
+    const seen = cardsIn(aView);
+    for (const c of down!) expect(seen.has(cardKey(c))).toBe(false);
+    // B lays two down: now only B knows the talon.
+    const bHand = s.hands[b];
+    let bDown: [typeof hand[number], typeof hand[number]] | null = null;
+    for (let i = 0; i < bHand.length && !bDown; i += 1)
+      for (let j = i + 1; j < bHand.length && !bDown; j += 1) if (isLegalDiscard(s, [bHand[i], bHand[j]])) bDown = [bHand[i], bHand[j]];
+    s = discard(s, bDown!);
+    expect(toBotView(s, a).talon).toBeNull();
+    expect(toBotView(s, b).talon).toEqual(bDown);
+    for (const c of bDown!) expect(cardsIn(toBotView(s, a)).has(cardKey(c))).toBe(false);
   });
 });

@@ -205,15 +205,35 @@ export function isDealState(v: unknown): v is DealState {
   return tricks.length < 10 && turn === expected;
 }
 
+const BID_KINDS = ['passz', 'negyvenszaz', 'ulti', 'betli', 'durchmars', 'huszszaz', 'szintelenDurchmars'];
+
+/** A finished deal's result: declarer, a real bid, one contract per bid kind, parti totals, tricks per seat. */
+function isResult(v: unknown): v is DealResult {
+  if (!isObj(v) || !isPlayer(v.declarer) || !isBid(v.bid) || typeof v.kontra !== 'boolean') return false;
+  const bid = v.bid as Bid;
+  const contracts = v.contracts;
+  if (!Array.isArray(contracts) || contracts.length !== bid.kinds.length) return false;
+  const okContracts = contracts.every(
+    (c, i) =>
+      isObj(c) && BID_KINDS.includes(c.kind as string) && c.kind === bid.kinds[i] && typeof c.won === 'boolean' && isInt(c.value) && c.value > 0,
+  );
+  if (!okContracts) return false;
+  const parti = v.parti;
+  if (!(parti === null || (isObj(parti) && isNat(parti.declarer) && isNat(parti.defenders)))) return false;
+  const tw = v.tricksWon;
+  return Array.isArray(tw) && tw.length === 3 && tw.every(isNat) && (tw as number[]).reduce((a, b) => a + b, 0) <= 10;
+}
+
 function isRecord(v: unknown): v is DealRecord {
+  if (!isObj(v) || !isResult(v.result)) return false;
+  const expected = scoreDeal(v.result as DealResult);
   return (
-    isObj(v) &&
     isPlayer(v.dealer) &&
-    isObj(v.result) &&
     Array.isArray(v.units) &&
     v.units.length === 3 &&
     v.units.every(isInt) &&
-    (v.units as number[]).reduce((a, b) => a + b, 0) === 0
+    (v.units as number[]).reduce((a, b) => a + b, 0) === 0 &&
+    (v.units as number[]).every((u, i) => u === expected[i])
   );
 }
 

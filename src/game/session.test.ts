@@ -102,6 +102,25 @@ describe('session', () => {
     expect(isUltiSession(null)).toBe(false);
   });
 
+  it('the save guard checks the shape of every history[].result', () => {
+    const states = playSession(8, 'easy');
+    const later = clone(states.find((x) => x.history.length >= 2 && x.deal.phase === 'play') as UltiSession);
+    expect(isUltiSession(later)).toBe(true);
+    const tamper = (f: (r: Record<string, unknown>) => void) => {
+      const x = clone(later);
+      f(x.history[1].result as unknown as Record<string, unknown>);
+      return isUltiSession(x);
+    };
+    expect(tamper((r) => Object.keys(r).forEach((k) => delete r[k]))).toBe(false);
+    expect(tamper((r) => (r.declarer = 7))).toBe(false);
+    expect(tamper((r) => (r.bid = { kinds: ['nope'], trump: 'piros' }))).toBe(false);
+    expect(tamper((r) => (r.kontra = 'yes'))).toBe(false);
+    expect(tamper((r) => (r.contracts = []))).toBe(false);
+    expect(tamper((r) => ((r.contracts as { won: boolean }[])[0].won = !(r.contracts as { won: boolean }[])[0].won))).toBe(false);
+    expect(tamper((r) => (r.tricksWon = [11, 0, 0]))).toBe(false);
+    expect(tamper((r) => (r.parti = { declarer: 'a', defenders: 0 }))).toBe(false);
+  });
+
   it('bot RNG depends only on the saved state (so a resumed game replays the same bot moves)', () => {
     const s = startSession({ difficulty: 'medium', seed: 9 });
     expect(botRng(s)()).toBe(botRng(clone(s))());
